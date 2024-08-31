@@ -1,4 +1,4 @@
-const demoUserData = {
+const demoUserDataPlaceholder = {
   user: {
     id: 966521814,
     first_name: "John",
@@ -16,7 +16,11 @@ const demoUserData = {
 const DemoApp = {
   initData: Telegram.WebApp.initData || "",
   //   initDataUnsafe: Telegram.WebApp.initDataUnsafe || {},
-  initDataUnsafe: Telegram.WebApp.initDataUnsafe || demoUserData,
+  //   initDataUnsafe: Telegram.WebApp.initDataUnsafe || demoUserData,
+  initDataUnsafe:
+    Telegram.WebApp && Object.keys(Telegram.WebApp.initDataUnsafe).length > 0
+      ? Telegram.WebApp.initDataUnsafe
+      : demoUserDataPlaceholder,
   MainButton: Telegram.WebApp.MainButton,
   BackButton: Telegram.WebApp.BackButton,
   SettingsButton: Telegram.WebApp.SettingsButton,
