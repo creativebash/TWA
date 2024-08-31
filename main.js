@@ -1,6 +1,22 @@
+const demoUserData = {
+  user: {
+    id: 966521814,
+    first_name: "John",
+    last_name: "Doe",
+    username: "johndoe",
+    language_code: "en",
+    allows_write_to_pm: true,
+  },
+  chat_instance: "-2324007710334587311",
+  chat_type: "private",
+  auth_date: "1725135456",
+  hash: "4a0ac40dde18d0146cc2e01234567893dbd96253a8f43deee9042d29f1340355",
+};
+
 const DemoApp = {
   initData: Telegram.WebApp.initData || "",
-  initDataUnsafe: Telegram.WebApp.initDataUnsafe || {},
+  //   initDataUnsafe: Telegram.WebApp.initDataUnsafe || {},
+  initDataUnsafe: Telegram.WebApp.initDataUnsafe || demoUserData,
   MainButton: Telegram.WebApp.MainButton,
   BackButton: Telegram.WebApp.BackButton,
   SettingsButton: Telegram.WebApp.SettingsButton,
