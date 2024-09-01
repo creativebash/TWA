@@ -1,4 +1,4 @@
-const demoUserDataPlaceholder = {
+const userDataPlaceholder = {
   user: {
     id: 966521814,
     first_name: "John",
@@ -13,14 +13,15 @@ const demoUserDataPlaceholder = {
   hash: "4a0ac40dde18d0146cc2e01234567893dbd96253a8f43deee9042d29f1340355",
 };
 
+const userData =
+  Telegram.WebApp && Object.keys(Telegram.WebApp.initDataUnsafe).length > 0
+    ? Telegram.WebApp.initDataUnsafe
+    : userDataPlaceholder;
+
 const DemoApp = {
   initData: Telegram.WebApp.initData || "",
   //   initDataUnsafe: Telegram.WebApp.initDataUnsafe || {},
-  //   initDataUnsafe: Telegram.WebApp.initDataUnsafe || demoUserData,
-  initDataUnsafe:
-    Telegram.WebApp && Object.keys(Telegram.WebApp.initDataUnsafe).length > 0
-      ? Telegram.WebApp.initDataUnsafe
-      : demoUserDataPlaceholder,
+  initDataUnsafe: userData,
   MainButton: Telegram.WebApp.MainButton,
   BackButton: Telegram.WebApp.BackButton,
   SettingsButton: Telegram.WebApp.SettingsButton,

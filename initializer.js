@@ -3,21 +3,32 @@ This part of code is used to initialize the demo app
 and set up the event handlers we need.
  */
 
-// const themeDataPlaceholder = {
-//   bg_color: "#212121",
-//   button_color: "#8774e1",
-//   button_text_color: "#ffffff",
-//   hint_color: "#aaaaaa",
-//   link_color: "#8774e1",
-//   secondary_bg_color: "#181818",
-//   text_color: "#ffffff",
-//   header_bg_color: "#212121",
-//   accent_text_color: "#8774e1",
-//   section_bg_color: "#212121",
-//   section_header_text_color: "#8774e1",
-//   subtitle_text_color: "#aaaaaa",
-//   destructive_text_color: "#ff595a",
-// };
+const themeDataPlaceholder = {
+  bg_color: "#212121",
+  button_color: "#8774e1",
+  button_text_color: "#ffffff",
+  hint_color: "#aaaaaa",
+  link_color: "#8774e1",
+  secondary_bg_color: "#181818",
+  text_color: "#ffffff",
+  header_bg_color: "#212121",
+  accent_text_color: "#8774e1",
+  section_bg_color: "#212121",
+  section_header_text_color: "#8774e1",
+  subtitle_text_color: "#aaaaaa",
+  destructive_text_color: "#ff595a",
+};
+
+const themeData =
+  Telegram.WebApp && Object.keys(Telegram.WebApp.themeParams).length > 0
+    ? Telegram.WebApp.themeParams
+    : themeDataPlaceholder;
+
+document.getElementById("theme_data").innerHTML = JSON.stringify(
+  themeData,
+  null,
+  2
+);
 
 Telegram.WebApp.onEvent("themeChanged", function () {
   document.getElementById("theme_data").innerHTML = JSON.stringify(
@@ -40,11 +51,6 @@ document.getElementById("webview_data").innerHTML = JSON.stringify(
   2
 );
 
-document.getElementById("theme_data").innerHTML = JSON.stringify(
-  Telegram.WebApp.themeParams,
-  null,
-  2
-);
 document
   .getElementById("regular_link")
   .setAttribute(
