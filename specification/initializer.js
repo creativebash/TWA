@@ -38,15 +38,15 @@ Telegram.WebApp.onEvent("themeChanged", function () {
   );
 });
 
-if (DemoApp.initDataUnsafe.query_id) {
+if (AppContext.initDataUnsafe.query_id) {
   document.getElementById("main_btn").style.display = "block";
 }
 document.getElementById("with_webview_btn").style.display =
-  !!DemoApp.initDataUnsafe.query_id && !DemoApp.initDataUnsafe.receiver
+  !!AppContext.initDataUnsafe.query_id && !AppContext.initDataUnsafe.receiver
     ? "block"
     : "none";
 document.getElementById("webview_data").innerHTML = JSON.stringify(
-  DemoApp.initDataUnsafe,
+  AppContext.initDataUnsafe,
   null,
   2
 );
@@ -72,34 +72,34 @@ document
 document.getElementById("ver").innerHTML = Telegram.WebApp.version;
 document.getElementById("platform").innerHTML = Telegram.WebApp.platform;
 
-if (DemoApp.initDataUnsafe.receiver) {
+if (AppContext.initDataUnsafe.receiver) {
   document.getElementById("peer_wrap").style.display = "block";
   document.getElementById("peer_name").innerHTML =
-    DemoApp.initDataUnsafe.receiver.first_name +
+    AppContext.initDataUnsafe.receiver.first_name +
     " " +
-    DemoApp.initDataUnsafe.receiver.last_name;
-  if (DemoApp.initDataUnsafe.receiver.photo_url) {
+    AppContext.initDataUnsafe.receiver.last_name;
+  if (AppContext.initDataUnsafe.receiver.photo_url) {
     document
       .getElementById("peer_photo")
-      .setAttribute("src", DemoApp.initDataUnsafe.receiver.photo_url);
+      .setAttribute("src", AppContext.initDataUnsafe.receiver.photo_url);
   } else {
     document.getElementById("peer_photo").style.display = "none";
   }
-} else if (DemoApp.initDataUnsafe.chat) {
+} else if (AppContext.initDataUnsafe.chat) {
   document.getElementById("peer_wrap").style.display = "block";
   document.getElementById("peer_name").innerHTML =
-    DemoApp.initDataUnsafe.chat.title;
-  if (DemoApp.initDataUnsafe.chat.photo_url) {
+    AppContext.initDataUnsafe.chat.title;
+  if (AppContext.initDataUnsafe.chat.photo_url) {
     document
       .getElementById("peer_photo")
-      .setAttribute("src", DemoApp.initDataUnsafe.chat.photo_url);
+      .setAttribute("src", AppContext.initDataUnsafe.chat.photo_url);
   } else {
     document.getElementById("peer_photo").style.display = "none";
   }
 }
 
-DemoApp.checkInitData();
-DemoApp.init();
+AppContext.checkInitData();
+AppContext.init();
 
 function setViewportData() {
   document
@@ -182,13 +182,13 @@ Telegram.WebApp.onEvent("themeChanged", function () {
 });
 
 try {
-  DemoApp.testClipboard(document.getElementById("clipboard_test"));
+  AppContext.testClipboard(document.getElementById("clipboard_test"));
 } catch (e) {}
 
 try {
-  DemoApp.loadCloudKeys();
+  AppContext.loadCloudKeys();
 } catch (e) {}
 
 try {
-  DemoApp.biometricInit();
+  AppContext.biometricInit();
 } catch (e) {}

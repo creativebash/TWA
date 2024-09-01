@@ -18,7 +18,7 @@ const userData =
     ? Telegram.WebApp.initDataUnsafe
     : userDataPlaceholder;
 
-const DemoApp = {
+const AppContext = {
   initData: Telegram.WebApp.initData || "",
   //   initDataUnsafe: Telegram.WebApp.initDataUnsafe || {},
   initDataUnsafe: userData,
@@ -32,12 +32,12 @@ const DemoApp = {
     Telegram.WebApp.MainButton.setParams({
       text: "CLOSE WEBVIEW",
       is_visible: true,
-    }).onClick(DemoApp.close);
+    }).onClick(AppContext.close);
     Telegram.WebApp.BackButton.onClick(function () {
-      DemoApp.showAlert("Back button pressed");
+      AppContext.showAlert("Back button pressed");
     });
     Telegram.WebApp.SettingsButton.onClick(function () {
-      DemoApp.showAlert("Settings opened!");
+      AppContext.showAlert("Settings opened!");
     });
   },
   expand() {
@@ -57,20 +57,20 @@ const DemoApp = {
     }
   },
   toggleBackButton(el) {
-    if (DemoApp.BackButton.isVisible) {
-      DemoApp.BackButton.hide();
+    if (AppContext.BackButton.isVisible) {
+      AppContext.BackButton.hide();
       el.innerHTML = "Show Back Button";
     } else {
-      DemoApp.BackButton.show();
+      AppContext.BackButton.show();
       el.innerHTML = "Hide Back Button";
     }
   },
   toggleSettingsButton(el) {
-    if (DemoApp.SettingsButton.isVisible) {
-      DemoApp.SettingsButton.hide();
+    if (AppContext.SettingsButton.isVisible) {
+      AppContext.SettingsButton.hide();
       el.innerHTML = "Show Settings Button";
     } else {
-      DemoApp.SettingsButton.show();
+      AppContext.SettingsButton.show();
       el.innerHTML = "Hide Settings Button";
     }
   },
@@ -104,7 +104,7 @@ const DemoApp = {
 
   // actions
   sendMessage(msg_id, with_webview) {
-    if (!DemoApp.initDataUnsafe.query_id) {
+    if (!AppContext.initDataUnsafe.query_id) {
       alert("WebViewQueryId not defined");
       return;
     }
@@ -114,11 +114,12 @@ const DemoApp = {
     const btn = document.querySelector("#btn_status");
     btn.textContent = "Sending...";
 
-    DemoApp.apiRequest(
+    AppContext.apiRequest(
       "sendMessage",
       {
         msg_id: msg_id || "",
-        with_webview: !DemoApp.initDataUnsafe.receiver && with_webview ? 1 : 0,
+        with_webview:
+          !AppContext.initDataUnsafe.receiver && with_webview ? 1 : 0,
       },
       function (result) {
         document
@@ -155,7 +156,7 @@ const DemoApp = {
     const btnStatus = document.querySelector("#btn_status");
     btnStatus.textContent = "Changing button...";
 
-    DemoApp.apiRequest("changeMenuButton", {}, function (result) {
+    AppContext.apiRequest("changeMenuButton", {}, function (result) {
       document
         .querySelectorAll("button")
         .forEach((btn) => (btn.disabled = false));
@@ -193,12 +194,12 @@ const DemoApp = {
   checkInitData() {
     const webViewStatus = document.querySelector("#webview_data_status");
     if (
-      DemoApp.initDataUnsafe.query_id &&
-      DemoApp.initData &&
+      AppContext.initDataUnsafe.query_id &&
+      AppContext.initData &&
       webViewStatus.classList.contains("status_need")
     ) {
       webViewStatus.classList.remove("status_need");
-      DemoApp.apiRequest("checkInitData", {}, function (result) {
+      AppContext.apiRequest("checkInitData", {}, function (result) {
         if (result.ok) {
           webViewStatus.textContent = "Hash is correct (async)";
           webViewStatus.className = "ok";
@@ -242,7 +243,7 @@ const DemoApp = {
       }
 
       if (!chooseChatTypes.length) {
-        return DemoApp.showAlert("Select chat types!");
+        return AppContext.showAlert("Select chat types!");
       }
 
       Telegram.WebApp.switchInlineQuery(query, chatTypes);
@@ -261,9 +262,9 @@ const DemoApp = {
   requestContact() {
     Telegram.WebApp.requestContact(function (result) {
       if (result) {
-        DemoApp.showAlert("Contact granted");
+        AppContext.showAlert("Contact granted");
       } else {
-        DemoApp.showAlert("Contact denied");
+        AppContext.showAlert("Contact denied");
       }
     });
   },
@@ -283,7 +284,7 @@ const DemoApp = {
       },
       function (buttonId) {
         if (buttonId === "delete") {
-          DemoApp.showAlert("'Delete all' selected");
+          AppContext.showAlert("'Delete all' selected");
         } else if (buttonId === "faq") {
           Telegram.WebApp.openLink("https://telegram.org/faq");
         }
@@ -309,7 +310,7 @@ const DemoApp = {
             return true;
           }
         } else {
-          DemoApp.showAlert(text);
+          AppContext.showAlert(text);
 
           return true;
         }
@@ -445,7 +446,7 @@ const DemoApp = {
   cloudStorageItems: {},
   editCloudRow(el, event) {
     event.preventDefault();
-    const values = DemoApp.cloudStorageItems;
+    const values = AppContext.cloudStorageItems;
     const key = el.closest("tr").getAttribute("data-key");
     el.form.reset();
     el.form.key.value = key;
@@ -456,17 +457,17 @@ const DemoApp = {
     const key = el.closest("tr").getAttribute("data-key");
     Telegram.WebApp.CloudStorage.removeItem(key, function (err, deleted) {
       if (err) {
-        DemoApp.showAlert("Error: " + err);
+        AppContext.showAlert("Error: " + err);
       } else {
         if (deleted) {
-          const index = DemoApp.cloudStorageKeys.indexOf(key);
+          const index = AppContext.cloudStorageKeys.indexOf(key);
           if (index >= 0) {
-            DemoApp.cloudStorageKeys.splice(index, 1);
+            AppContext.cloudStorageKeys.splice(index, 1);
           }
-          delete DemoApp.cloudStorageItems[key];
+          delete AppContext.cloudStorageItems[key];
         }
         el.form.reset();
-        DemoApp.updateCloudRows();
+        AppContext.updateCloudRows();
       }
     });
   },
@@ -476,23 +477,23 @@ const DemoApp = {
     const value = form.value.value;
     Telegram.WebApp.CloudStorage.setItem(key, value, function (err, saved) {
       if (err) {
-        DemoApp.showAlert("Error: " + err);
+        AppContext.showAlert("Error: " + err);
       } else {
         if (saved) {
-          if (typeof DemoApp.cloudStorageItems[key] === "undefined") {
-            DemoApp.cloudStorageKeys.push(key);
+          if (typeof AppContext.cloudStorageItems[key] === "undefined") {
+            AppContext.cloudStorageKeys.push(key);
           }
-          DemoApp.cloudStorageItems[key] = value;
+          AppContext.cloudStorageItems[key] = value;
         }
         form.reset();
-        DemoApp.updateCloudRows();
+        AppContext.updateCloudRows();
       }
     });
   },
   updateCloudRows() {
     let html = "";
-    const keys = DemoApp.cloudStorageKeys;
-    const values = DemoApp.cloudStorageItems;
+    const keys = AppContext.cloudStorageKeys;
+    const values = AppContext.cloudStorageItems;
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       html +=
@@ -502,7 +503,7 @@ const DemoApp = {
         cleanHTML(key) +
         "</td><td>" +
         cleanHTML(values[key]) +
-        '</td><td><button onclick="DemoApp.editCloudRow(this, event);">Edit</button><button onclick="DemoApp.deleteCloudRow(this, event);">Delete</button></td></tr>';
+        '</td><td><button onclick="AppContext.editCloudRow(this, event);">Edit</button><button onclick="AppContext.deleteCloudRow(this, event);">Delete</button></td></tr>';
     }
 
     document.getElementById("cloud_rows").innerHTML = html;
@@ -510,20 +511,20 @@ const DemoApp = {
   loadCloudKeys(el) {
     Telegram.WebApp.CloudStorage.getKeys(function (err, keys) {
       if (err) {
-        DemoApp.showAlert("Error: " + err);
+        AppContext.showAlert("Error: " + err);
       } else {
         if (keys.length > 0) {
           Telegram.WebApp.CloudStorage.getItems(keys, function (err, values) {
             if (err) {
-              DemoApp.showAlert("Error: " + err);
+              AppContext.showAlert("Error: " + err);
             } else {
-              DemoApp.cloudStorageKeys = keys;
-              DemoApp.cloudStorageItems = {};
+              AppContext.cloudStorageKeys = keys;
+              AppContext.cloudStorageItems = {};
               for (let i = 0; i < keys.length; i++) {
                 const key = keys[i];
-                DemoApp.cloudStorageItems[key] = values[key];
+                AppContext.cloudStorageItems[key] = values[key];
               }
-              DemoApp.updateCloudRows();
+              AppContext.updateCloudRows();
             }
           });
         }
@@ -534,8 +535,8 @@ const DemoApp = {
   // biometrics
   biometricInit(el) {
     const biometricManager = Telegram.WebApp.BiometricManager;
-    if (!DemoApp.biometricInited) {
-      DemoApp.biometricInited = true;
+    if (!AppContext.biometricInited) {
+      AppContext.biometricInited = true;
       Telegram.WebApp.onEvent("biometricManagerUpdated", function () {
         document.getElementById("bm_inited").textContent =
           biometricManager.isInited ? "true" : "false";
@@ -565,7 +566,7 @@ const DemoApp = {
   biometricRequestAccess(el) {
     const biometricManager = Telegram.WebApp.BiometricManager;
     if (!biometricManager.isInited) {
-      return DemoApp.showAlert("Biometric not inited yet!");
+      return AppContext.showAlert("Biometric not inited yet!");
     }
 
     biometricManager.requestAccess(
@@ -584,7 +585,7 @@ const DemoApp = {
   biometricRequestAuth(el) {
     const biometricManager = Telegram.WebApp.BiometricManager;
     if (!biometricManager.isInited) {
-      return DemoApp.showAlert("Biometric not inited yet!");
+      return AppContext.showAlert("Biometric not inited yet!");
     }
 
     el.nextElementSibling.innerHTML = "";
@@ -606,7 +607,7 @@ const DemoApp = {
   biometricOpenSettings(el) {
     const biometricManager = Telegram.WebApp.BiometricManager;
     if (!biometricManager.isInited) {
-      return DemoApp.showAlert("Biometric not inited yet!");
+      return AppContext.showAlert("Biometric not inited yet!");
     }
 
     if (
@@ -622,7 +623,7 @@ const DemoApp = {
   biometricSetToken(el) {
     const biometricManager = Telegram.WebApp.BiometricManager;
     if (!biometricManager.isInited) {
-      return DemoApp.showAlert("Biometric not inited yet!");
+      return AppContext.showAlert("Biometric not inited yet!");
     }
 
     const token = parseInt(Math.random().toString().substring(2)).toString(16);
@@ -641,7 +642,7 @@ const DemoApp = {
   biometricRemoveToken(el) {
     const biometricManager = Telegram.WebApp.BiometricManager;
     if (!biometricManager.isInited) {
-      return DemoApp.showAlert("Biometric not inited yet!");
+      return AppContext.showAlert("Biometric not inited yet!");
     }
 
     biometricManager.updateBiometricToken("", function (updated) {
@@ -672,7 +673,7 @@ const DemoApp = {
       })
     );
 
-    const authData = DemoApp.initData || "";
+    const authData = AppContext.initData || "";
     fetch("/demo/api", {
       method: "POST",
       body: JSON.stringify(
@@ -698,17 +699,17 @@ const DemoApp = {
   },
 };
 
-const DemoAppMenu = {
+const AppContextMenu = {
   init() {
-    DemoApp.init();
+    AppContext.init();
     document.body.classList.add("gray");
     Telegram.WebApp.setHeaderColor("secondary_bg_color");
   },
 };
 
-const DemoAppInitData = {
+const AppContextInitData = {
   init() {
-    DemoApp.init();
+    AppContext.init();
     Telegram.WebApp.onEvent("themeChanged", function () {
       document.getElementById("theme_data").innerHTML = JSON.stringify(
         Telegram.WebApp.themeParams,
@@ -717,7 +718,7 @@ const DemoAppInitData = {
       );
     });
     document.getElementById("webview_data").innerHTML = JSON.stringify(
-      DemoApp.initDataUnsafe,
+      AppContext.initDataUnsafe,
       null,
       2
     );
@@ -726,15 +727,15 @@ const DemoAppInitData = {
       null,
       2
     );
-    DemoApp.checkInitData();
+    AppContext.checkInitData();
   },
 };
 
-const DemoAppViewport = {
+const AppContextViewport = {
   init() {
-    DemoApp.init();
-    Telegram.WebApp.onEvent("viewportChanged", DemoAppViewport.setData);
-    DemoAppViewport.setData();
+    AppContext.init();
+    Telegram.WebApp.onEvent("viewportChanged", AppContextViewport.setData);
+    AppContextViewport.setData();
   },
   setData() {
     document
