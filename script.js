@@ -1,5 +1,5 @@
 // Initialize Telegram WebApp
-const tg = window.Telegram.WebApp;
+const tg = Telegram.WebApp;
 
 // Main app function
 function initApp() {
