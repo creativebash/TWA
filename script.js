@@ -1,5 +1,5 @@
 // Initialize Telegram WebApp
-const tg = window.Telegram.WebApp;
+const TWApp = window.Telegram.WebApp;
 
 // Global variable to track the current action
 let currentAction = null;
@@ -18,9 +18,10 @@ const userDataPlaceholder = {
   auth_date: "1725135456",
   hash: "4a0ac40dde18d0146cc2e01234567893dbd96253a8f43deee9042d29f1340355",
 };
+
 const userData =
-  Telegram.WebApp && Object.keys(tg.initDataUnsafe).length > 0
-    ? tg.initDataUnsafe
+  Telegram.WebApp && Object.keys(TWApp.initDataUnsafe).length > 0
+    ? TWApp.initDataUnsafe
     : userDataPlaceholder;
 
 document.getElementById("webview_data").innerHTML = JSON.stringify(
@@ -32,8 +33,8 @@ document.getElementById("webview_data").innerHTML = JSON.stringify(
 // Main app function
 function initApp() {
   console.log("initApp called");
-  tg.ready();
-  tg.expand();
+  TWApp.ready();
+  TWApp.expand();
 
   // Set up navigation
   document.querySelector("nav").addEventListener("click", (e) => {
@@ -75,13 +76,13 @@ function showSection(sectionId) {
 // Load user profile
 function loadProfile() {
   console.log("loadProfile called");
-  tg.sendData(JSON.stringify({ action: "profile" }));
+  TWApp.sendData(JSON.stringify({ action: "profile" }));
 }
 
 // Load feed
 function loadFeed() {
   console.log("loadFeed called");
-  tg.sendData(JSON.stringify({ action: "feed" }));
+  TWApp.sendData(JSON.stringify({ action: "feed" }));
 }
 
 // Setup post form
@@ -93,7 +94,7 @@ function setupPostForm() {
     const content = document.getElementById("post-content").value;
     const tags = document.getElementById("post-tags").value;
     console.log("Sending post data:", content, tags);
-    tg.sendData(
+    TWApp.sendData(
       JSON.stringify({ action: "post", content: content, tags: tags })
     );
   };
@@ -101,7 +102,7 @@ function setupPostForm() {
 
 // Handle incoming messages
 function handleIncomingMessages() {
-  tg.onEvent("message", function (message) {
+  TWApp.onEvent("message", function (message) {
     console.log("Message received:", message);
 
     try {
