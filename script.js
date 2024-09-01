@@ -1,6 +1,9 @@
 // Initialize Telegram WebApp
 const tg = window.Telegram.WebApp;
 
+// Global variable to track the current action
+let currentAction = null;
+
 // Main app function
 function initApp() {
   console.log("initApp called");
@@ -28,6 +31,9 @@ function showSection(sectionId) {
     section.style.display = section.id === sectionId ? "block" : "none";
   });
 
+  // Update current action
+  currentAction = sectionId;
+
   switch (sectionId) {
     case "profile":
       loadProfile();
@@ -45,46 +51,12 @@ function showSection(sectionId) {
 function loadProfile() {
   console.log("loadProfile called");
   tg.sendData(JSON.stringify({ action: "profile" }));
-  tg.onEvent("message", function (message) {
-    console.log("Profile data received:", message);
-    try {
-      const profile = JSON.parse(message.data);
-      document.getElementById("profile-content").innerHTML = `
-        <h3>${profile.username}</h3>
-        <p>${profile.bio}</p>
-        <p>Favorite cryptocurrencies: ${profile.favorite_cryptocurrencies}</p>
-      `;
-    } catch (error) {
-      console.error("Error parsing profile data:", error);
-    }
-  });
 }
 
 // Load feed
 function loadFeed() {
   console.log("loadFeed called");
   tg.sendData(JSON.stringify({ action: "feed" }));
-  tg.onEvent("message", function (message) {
-    console.log("Feed data received:", message);
-    try {
-      const feed = JSON.parse(message.data);
-      const feedHtml = feed
-        .map(
-          (item) => `
-            <div class="post">
-              <h3>${item.author}</h3>
-              <p>${item.post.content}</p>
-              <p>Tags: ${item.post.tags}</p>
-              <p>Posted: ${new Date(item.post.created_at).toLocaleString()}</p>
-            </div>
-          `
-        )
-        .join("");
-      document.getElementById("feed-content").innerHTML = feedHtml;
-    } catch (error) {
-      console.error("Error parsing feed data:", error);
-    }
-  });
 }
 
 // Setup post form
@@ -99,14 +71,52 @@ function setupPostForm() {
     tg.sendData(
       JSON.stringify({ action: "post", content: content, tags: tags })
     );
-    tg.onEvent("message", function (message) {
-      console.log("Post creation response:", message);
-      alert("Post created successfully!");
-      showSection("feed");
-    });
   };
 }
 
+// Handle incoming messages
+function handleIncomingMessages() {
+  tg.onEvent("message", function (message) {
+    console.log("Message received:", message);
+
+    try {
+      const data = JSON.parse(message.data);
+
+      if (currentAction === "profile" && data.username) {
+        document.getElementById("profile-content").innerHTML = `
+          <h3>${data.username}</h3>
+          <p>${data.bio}</p>
+          <p>Favorite cryptocurrencies: ${data.favorite_cryptocurrencies}</p>
+        `;
+      } else if (currentAction === "feed" && Array.isArray(data)) {
+        const feedHtml = data
+          .map(
+            (item) => `
+              <div class="post">
+                <h3>${item.author}</h3>
+                <p>${item.post.content}</p>
+                <p>Tags: ${item.post.tags}</p>
+                <p>Posted: ${new Date(
+                  item.post.created_at
+                ).toLocaleString()}</p>
+              </div>
+            `
+          )
+          .join("");
+        document.getElementById("feed-content").innerHTML = feedHtml;
+      } else if (currentAction === "create-post" && data.action === "post") {
+        alert("Post created successfully!");
+        showSection("feed");
+      }
+    } catch (error) {
+      console.error("Error parsing message data:", error);
+    }
+  });
+}
+
 // Initialize the app when the document is ready
-document.addEventListener("DOMContentLoaded", initApp);
+document.addEventListener("DOMContentLoaded", () => {
+  initApp();
+  handleIncomingMessages();
+});
 console.log("Script loaded");
