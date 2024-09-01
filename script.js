@@ -76,13 +76,17 @@ function showSection(sectionId) {
 // Load user profile
 function loadProfile() {
   console.log("loadProfile called");
-  TWApp.sendData(JSON.stringify({ action: "profile" }));
+  const dataToSend = JSON.stringify({ action: "profile" });
+  console.log("Sending data to bot:", dataToSend);
+  TWApp.sendData(dataToSend);
 }
 
 // Load feed
 function loadFeed() {
   console.log("loadFeed called");
-  TWApp.sendData(JSON.stringify({ action: "feed" }));
+  const dataToSend = JSON.stringify({ action: "feed" });
+  console.log("Sending data to bot:", dataToSend);
+  TWApp.sendData(dataToSend);
 }
 
 // Setup post form
@@ -93,10 +97,13 @@ function setupPostForm() {
     e.preventDefault();
     const content = document.getElementById("post-content").value;
     const tags = document.getElementById("post-tags").value;
-    console.log("Sending post data:", content, tags);
-    TWApp.sendData(
-      JSON.stringify({ action: "post", content: content, tags: tags })
-    );
+    const dataToSend = JSON.stringify({
+      action: "post",
+      content: content,
+      tags: tags,
+    });
+    console.log("Sending post data to bot:", dataToSend);
+    TWApp.sendData(dataToSend);
   };
 }
 
