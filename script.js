@@ -19,8 +19,8 @@ const userDataPlaceholder = {
   hash: "4a0ac40dde18d0146cc2e01234567893dbd96253a8f43deee9042d29f1340355",
 };
 const userData =
-  Telegram.WebApp && Object.keys(Telegram.WebApp.initDataUnsafe).length > 0
-    ? Telegram.WebApp.initDataUnsafe
+  Telegram.WebApp && Object.keys(tg.initDataUnsafe).length > 0
+    ? tg.initDataUnsafe
     : userDataPlaceholder;
 
 document.getElementById("webview_data").innerHTML = JSON.stringify(
