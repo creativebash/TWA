@@ -4,6 +4,7 @@ const TWApp = window.Telegram.WebApp;
 // Global variable to track the current action
 let currentAction = null;
 
+// Placeholder data for user information
 const userDataPlaceholder = {
   user: {
     id: 966521814,
@@ -19,20 +20,22 @@ const userDataPlaceholder = {
   hash: "4a0ac40dde18d0146cc2e01234567893dbd96253a8f43deee9042d29f1340355",
 };
 
+// Determine whether to use real or placeholder data
 const userData =
-  Telegram.WebApp && Object.keys(TWApp.initDataUnsafe).length > 0
+  TWApp && Object.keys(TWApp.initDataUnsafe).length > 0
     ? TWApp.initDataUnsafe
     : userDataPlaceholder;
 
+// Display user data in the webview
 document.getElementById("webview_data").innerHTML = JSON.stringify(
   userData,
   null,
   2
 );
 
-// Main app function
+// Main app initialization
 function initApp() {
-  console.log("initApp called");
+  console.log("App initializing...");
   TWApp.ready();
   TWApp.expand();
 
@@ -41,23 +44,23 @@ function initApp() {
     if (e.target.tagName === "A") {
       e.preventDefault();
       const sectionId = e.target.getAttribute("href").substring(1);
-      console.log("Navigation clicked:", sectionId);
+      console.log("Navigating to section:", sectionId);
       showSection(sectionId);
     }
   });
 
-  // Initial load
+  // Initial section load
   showSection("profile");
 }
 
-// Show specific section
+// Function to display a specific section
 function showSection(sectionId) {
-  console.log("showSection called with:", sectionId);
+  console.log("Displaying section:", sectionId);
   document.querySelectorAll("main > section").forEach((section) => {
     section.style.display = section.id === sectionId ? "block" : "none";
   });
 
-  // Update current action
+  // Update the current action
   currentAction = sectionId;
 
   switch (sectionId) {
@@ -73,55 +76,66 @@ function showSection(sectionId) {
   }
 }
 
-// Load user profile
+// Load the user profile section
 function loadProfile() {
-  console.log("loadProfile called");
-  const dataToSend = JSON.stringify({ action: "profile" });
-  console.log("Sending data to bot:", dataToSend);
-  TWApp.sendData(dataToSend);
+  console.log("Loading user profile...");
+  sendDataToBot({ action: "profile" });
 }
 
-// Load feed
+// Load the feed section
 function loadFeed() {
-  console.log("loadFeed called");
-  const dataToSend = JSON.stringify({ action: "feed" });
-  console.log("Sending data to bot:", dataToSend);
-  TWApp.sendData(dataToSend);
+  console.log("Loading feed...");
+  sendDataToBot({ action: "feed" });
 }
 
-// Setup post form
+// Set up the post creation form
 function setupPostForm() {
-  console.log("setupPostForm called");
+  console.log("Setting up post form...");
   const form = document.getElementById("post-form");
   form.onsubmit = (e) => {
     e.preventDefault();
     const content = document.getElementById("post-content").value;
     const tags = document.getElementById("post-tags").value;
-    const dataToSend = JSON.stringify({
-      action: "post",
-      content: content,
-      tags: tags,
-    });
-    console.log("Sending post data to bot:", dataToSend);
-    TWApp.sendData(dataToSend);
+    sendDataToBot({ action: "post", content, tags });
   };
 }
 
-// Handle incoming messages
+// Function to send data to the bot
+function sendDataToBot(data) {
+  const dataToSend = JSON.stringify(data);
+  console.log("Sending data to bot:", dataToSend);
+  TWApp.sendData(dataToSend);
+}
+
+// Handle incoming messages from the bot
 function handleIncomingMessages() {
   TWApp.onEvent("message", function (message) {
     console.log("Message received:", message);
 
     try {
       const data = JSON.parse(message.data);
+      processIncomingData(data);
+    } catch (error) {
+      console.error("Error parsing incoming message:", error);
+    }
+  });
+}
 
-      if (data.action === "profile" && data.user) {
+// Process the incoming data based on the action
+function processIncomingData(data) {
+  switch (data.action) {
+    case "profile":
+      if (data.user) {
         document.getElementById("profile-content").innerHTML = `
           <h3>${data.user.username}</h3>
           <p>${data.user.bio}</p>
           <p>Favorite cryptocurrencies: ${data.user.favorite_cryptocurrencies}</p>
         `;
-      } else if (data.action === "feed" && Array.isArray(data.posts)) {
+      }
+      break;
+
+    case "feed":
+      if (Array.isArray(data.posts)) {
         const feedHtml = data.posts
           .map(
             (item) => `
@@ -137,14 +151,19 @@ function handleIncomingMessages() {
           )
           .join("");
         document.getElementById("feed-content").innerHTML = feedHtml;
-      } else if (data.action === "post" && data.post) {
+      }
+      break;
+
+    case "post":
+      if (data.post) {
         alert("Post created successfully!");
         showSection("feed");
       }
-    } catch (error) {
-      console.error("Error parsing message data:", error);
-    }
-  });
+      break;
+
+    default:
+      console.warn("Unknown action:", data.action);
+  }
 }
 
 // Initialize the app when the document is ready
@@ -152,4 +171,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initApp();
   handleIncomingMessages();
 });
+
 console.log("Script loaded");
