@@ -115,14 +115,14 @@ function handleIncomingMessages() {
     try {
       const data = JSON.parse(message.data);
 
-      if (currentAction === "profile" && data.username) {
+      if (data.action === "profile" && data.user) {
         document.getElementById("profile-content").innerHTML = `
-          <h3>${data.username}</h3>
-          <p>${data.bio}</p>
-          <p>Favorite cryptocurrencies: ${data.favorite_cryptocurrencies}</p>
+          <h3>${data.user.username}</h3>
+          <p>${data.user.bio}</p>
+          <p>Favorite cryptocurrencies: ${data.user.favorite_cryptocurrencies}</p>
         `;
-      } else if (currentAction === "feed" && Array.isArray(data)) {
-        const feedHtml = data
+      } else if (data.action === "feed" && Array.isArray(data.posts)) {
+        const feedHtml = data.posts
           .map(
             (item) => `
               <div class="post">
@@ -137,7 +137,7 @@ function handleIncomingMessages() {
           )
           .join("");
         document.getElementById("feed-content").innerHTML = feedHtml;
-      } else if (currentAction === "create-post" && data.action === "post") {
+      } else if (data.action === "post" && data.post) {
         alert("Post created successfully!");
         showSection("feed");
       }
